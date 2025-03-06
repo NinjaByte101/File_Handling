@@ -1,1 +1,2 @@
-web: gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120
+Flask==2.3.2
+gunicorn==20.1.0
