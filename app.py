@@ -1,13 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, request, jsonify, render_template, send_from_directory
 import os
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
 
+# Configure upload folder and allowed extensions
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# Ensure the upload folder exists
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
@@ -21,19 +22,20 @@ def index():
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
-        flash('No file selected', 'error')
-        return redirect(request.url)
+        return jsonify({'success': False, 'message': 'No file selected'}), 400
     file = request.files['file']
     if file.filename == '':
-        flash('No file selected', 'error')
-        return redirect(request.url)
+        return jsonify({'success': False, 'message': 'No file selected'}), 400
     if file and allowed_file(file.filename):
         filename = file.filename
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        flash(f"File {filename} uploaded successfully!", 'message')
-        return redirect(url_for('index'))
-    flash('Invalid file type. Allowed types are: png, jpg, jpeg, pdf.', 'error')
-    return redirect(request.url)
+        return jsonify({'success': True, 'filename': filename}), 200
+    return jsonify({'success': False, 'message': 'Invalid file type. Allowed types are: png, jpg, jpeg, pdf.'}), 400
+
+@app.route('/files/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 10000))  # Use PORT environment variable or default to 10000
+    app.run(host='0.0.0.0', port=port)
