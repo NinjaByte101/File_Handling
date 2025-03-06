@@ -2,14 +2,12 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Required for flashing messages
+app.secret_key = 'supersecretkey'
 
-# Configure upload folder and allowed extensions
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Ensure the upload folder exists
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
