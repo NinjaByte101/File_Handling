@@ -3,12 +3,10 @@ import os
 
 app = Flask(__name__)
 
-# Configure upload folder and allowed extensions
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Ensure the upload folder exists
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
@@ -37,5 +35,5 @@ def serve_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))  # Use PORT environment variable or default to 10000
+    port = int(os.environ.get('PORT', 10000))  
     app.run(host='0.0.0.0', port=port)
