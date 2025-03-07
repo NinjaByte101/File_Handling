@@ -29,13 +29,13 @@ def upload_file():
     if file and allowed_file(file.filename):
         filename = file.filename
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return jsonify({'success': True, 'filename': filename}), 200
+        return jsonify({'success': True, 'filename': filename})
     return jsonify({'success': False, 'message': 'Invalid file type. Allowed types are: png, jpg, jpeg, pdf.'}), 400
 
-@app.route('/files/<filename>')
-def uploaded_file(filename):
+@app.route('/uploads/<filename>')
+def serve_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))  # Use PORT environment variable or default to 10000
+    port = int(os.environ.get('PORT', 10000)) 
     app.run(host='0.0.0.0', port=port)
