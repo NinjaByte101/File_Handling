@@ -2,13 +2,10 @@ from flask import Flask, request, jsonify, render_template, send_from_directory
 import os
 
 app = Flask(__name__)
-
-# Configure upload folder and allowed extensions
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Ensure the upload folder exists
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
@@ -28,7 +25,10 @@ def upload_file():
         return jsonify({'success': False, 'message': 'No file selected'}), 400
     if file and allowed_file(file.filename):
         filename = file.filename
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        print(f"Upload folder: {app.config['UPLOAD_FOLDER']}")  # Debugging
+        print(f"File path: {file_path}")  # Debugging
+        file.save(file_path)
         return jsonify({'success': True, 'filename': filename})
     return jsonify({'success': False, 'message': 'Invalid file type. Allowed types are: png, jpg, jpeg, pdf.'}), 400
 
@@ -37,5 +37,5 @@ def serve_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000)) 
+    port = int(os.environ.get('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
